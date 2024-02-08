@@ -1,2 +1,5 @@
 # Build files (Windows)
 *.exe
+
+/obj/
+/bin/

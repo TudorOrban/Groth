@@ -1,4 +1,7 @@
 #include "Server.h"
+#include "Http/HttpRequest.h"
+#include "Http/HttpResponse.h"
+
 #include <iostream>
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -63,6 +66,7 @@ void Server::run()
 void Server::acceptConnections() const
 {
     int BUFFER_SIZE = 1024;
+
     while (true)
     {
         SOCKET clientSocket = accept(listenSocket, NULL, NULL);
@@ -74,7 +78,7 @@ void Server::acceptConnections() const
 
         // Buffer
         char buffer[BUFFER_SIZE];
-        ZeroMemory(buffer, 1024);
+        ZeroMemory(buffer, BUFFER_SIZE);
 
         // Receive data from client
         int bytesReceived = recv(clientSocket, buffer, BUFFER_SIZE, 0);
@@ -84,24 +88,41 @@ void Server::acceptConnections() const
         }
         else if (bytesReceived > 0)
         {
-            std::cout << "Received request:\n"
-                      << std::string(buffer, 0, bytesReceived) << std::endl;
+            std::string requestStr(buffer, bytesReceived);
+            HttpRequest request(requestStr);
 
-            // HttpResponse response;
-            // Send response
-            const char *response =
-                "HTTP/1.1 200 OK\r\n"
-                "Content-Type: text/html\r\n"
-                "Connection: close\r\n" // Inform the client to close the connection
-                "\r\n"
-                "<html><body><h1>Hello, World!</h1></body></html>";
+            std::cout << request.getMethod() << "\n" << request.getPath() << "\n"
+                << request.getHeader("test") << "\n" << request.getBody() << std::endl;
 
-            int sendResult = send(clientSocket, response, strlen(response), 0);
-            if (sendResult == SOCKET_ERROR)
-            {
-                std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
-            }
-            closesocket(clientSocket);
+            HttpResponse response;
+            response.setStatusCode(200); // Ok
+            response.setHeader("Content-Type", "text/html");
+            response.setHeader("Connection", "close");
+            response.setBody("<html><body><h1>Hello from C++ Server</h1></body></html>");
+
+            std::string responseStr = response.toString();
+            send(clientSocket, responseStr.c_str(), responseStr.length(), 0);
         }
+
+        closesocket(clientSocket);
     }
 }
+
+// std::cout << "Received request:\n"
+            //           << std::string(buffer, 0, bytesReceived) << std::endl;
+
+            // // HttpResponse response;
+            // // Send response
+            // const char *response =
+            //     "HTTP/1.1 200 OK\r\n"
+            //     "Content-Type: text/html\r\n"
+            //     "Connection: close\r\n" // Inform the client to close the connection
+            //     "\r\n"
+            //     "<html><body><h1>Hello, World!</h1></body></html>";
+
+            // int sendResult = send(clientSocket, response, strlen(response), 0);
+            // if (sendResult == SOCKET_ERROR)
+            // {
+            //     std::cerr << "Send failed: " << WSAGetLastError() << std::endl;
+            // }
+            // closesocket(clientSocket);

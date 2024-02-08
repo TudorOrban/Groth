@@ -28,7 +28,7 @@ $(TARGET): $(OBJECTS)
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp
 	@echo Compiling $<
 	@powershell -Command "$$dir = '$(@D)'; if (-Not (Test-Path $$dir)) { New-Item -ItemType Directory -Path $$dir | Out-Null }"
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CXXFLAGS) -I$(SRC_DIR) -c -o $@ $<
 
 # Rule to clean up the workspace
 clean:
@@ -39,6 +39,5 @@ clean:
 build:
 	@if not exist "$(OBJ_DIR)" mkdir "$(OBJ_DIR)"
 	@if not exist "$(OBJ_DIR)\Server" mkdir "$(OBJ_DIR)\Server"
+	@if not exist "$(OBJ_DIR)\Http" mkdir "$(OBJ_DIR)\Http"
 
-
-# @if not exist "$(OBJ_DIR)\Http" mkdir "$(OBJ_DIR)\Http"

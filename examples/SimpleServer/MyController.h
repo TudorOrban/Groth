@@ -1,9 +1,13 @@
 #pragma once
+
+#include <iostream>
+
 #include "BaseController.h"
 
 class MyController : public BaseController {
 public:
-    void registerRoutes(RouteConfig& routeConfig) override {
-
+    MyController() {
+        std::cout << "Controller instantiated" << std::endl;
     }
+    void registerRoutes(RouteConfig& routeConfig) override;
 };

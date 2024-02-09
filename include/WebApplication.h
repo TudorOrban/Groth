@@ -1,6 +1,7 @@
 #pragma once
 #include <memory>
 #include <vector>
+#include <iostream>
 #include "BaseController.h"
 #include "RouteConfig.h"
 #include "Server/Server.h"
@@ -14,9 +15,18 @@ public:
     template <typename ControllerType>
     void addController()
     {
-        auto controller = std::make_shared<ControllerType>();
-        controller->registerRoutes(*routeConfig);
-        controllers.push_back(controller);
+        try
+        {
+            std::cout << "Adding controller" << std::endl;
+            auto controller = std::make_shared<ControllerType>();
+            controller->registerRoutes(*routeConfig);
+            controllers.push_back(controller);
+            std::cout << "Controller added" << std::endl;
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Exception in addController: " << e.what() << std::endl;
+        }
     }
 
 private:

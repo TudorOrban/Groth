@@ -6,7 +6,7 @@ WebApplication::WebApplication(int port)
 
 void WebApplication::run()
 {
-    server = std::make_unique<Server>(port);
+    server = std::make_unique<Server>(port, routeConfig);
 
     try
     {

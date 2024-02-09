@@ -91,17 +91,19 @@ void Server::acceptConnections() const
             std::string requestStr(buffer, bytesReceived);
             HttpRequest request(requestStr);
 
-            std::cout << request.getMethod() << "\n"
-                      << request.getPath() << "\n"
-                      << request.getHeader("test") << "\n"
-                      << request.getBody() << std::endl;
-
             HttpResponse response;
-            response.setStatusCode(200); // Ok
-            response.setHeader("Content-Type", "text/html");
-            response.setHeader("Connection", "close");
-            response.setBody("<html><body><h1>Hello from C++ Server</h1></body></html>");
+            auto handler = routeConfig->getHandler(request.getMethod(), request.getPath());
 
+            if (handler) {
+                response = handler(request);
+            } else {
+                // Return 404
+                response.setStatusCode(404);
+                response.setHeader("Content-Type", "text/html");
+                response.setBody("<html><body><h1>404 Not Found</h1></body></html>");
+            }
+
+            
             std::string responseStr = response.toString();
             send(clientSocket, responseStr.c_str(), responseStr.length(), 0);
         }
@@ -109,6 +111,18 @@ void Server::acceptConnections() const
         closesocket(clientSocket);
     }
 }
+
+// std::cout << request.getMethod() << "\n"
+            //           << request.getPath() << "\n"
+            //           << request.getHeader("test") << "\n"
+            //           << request.getBody() << std::endl;
+
+            // response.setStatusCode(200); // Ok
+            // response.setHeader("Content-Type", "text/html");
+            // response.setHeader("Connection", "close");
+            // response.setBody("<html><body><h1>Hello from C++ Server</h1></body></html>");
+
+
 
 // std::cout << "Received request:\n"
 //           << std::string(buffer, 0, bytesReceived) << std::endl;

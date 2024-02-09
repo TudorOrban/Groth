@@ -3,3 +3,11 @@
 
 /obj/
 /bin/
+
+/out/
+/build/
+
+/.vs/
+
+# Leftovers
+leftovers.txt

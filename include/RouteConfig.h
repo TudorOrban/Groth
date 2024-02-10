@@ -2,6 +2,9 @@
 #include <string>
 #include <functional>
 #include <unordered_map>
+#include <optional>
+
+
 #include "Http/HttpRequest.h"
 #include "Http/HttpResponse.h"
 

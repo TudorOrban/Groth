@@ -21,4 +21,5 @@ private:
     std::shared_ptr<RouteConfig> routeConfig;
     void setupSocket();
     void acceptConnections() const;
+    void handleConnection(SOCKET clientSocket) const;
 };

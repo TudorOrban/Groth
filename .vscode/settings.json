@@ -50,5 +50,16 @@
         "map": "cpp",
         "regex": "cpp",
         "optional": "cpp",
+        "bit": "cpp",
+        "charconv": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "condition_variable": "cpp",
+        "string_view": "cpp",
+        "future": "cpp",
+        "mutex": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp"
     }
 }

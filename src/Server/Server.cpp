@@ -88,22 +88,30 @@ void Server::acceptConnections() const
         }
         else if (bytesReceived > 0)
         {
+            // Parse request from the client
             std::string requestStr(buffer, bytesReceived);
             HttpRequest request(requestStr);
 
-            HttpResponse response;
-            auto handler = routeConfig->getHandler(request.getMethod(), request.getPath());
+            // Prepare to collect dynamic route parameters
+            RouteParameters params;
 
-            if (handler) {
-                response = handler(request);
-            } else {
+            // Try to find a handler for the request
+            auto handlerResult = routeConfig->getHandler(request.getMethod(), request.getPath(), params);
+
+            HttpResponse response;
+            if (handlerResult.has_value())
+            {
+                response = handlerResult.value()(request, params);
+            }
+            else
+            {
                 // Return 404
                 response.setStatusCode(404);
                 response.setHeader("Content-Type", "text/html");
                 response.setBody("<html><body><h1>404 Not Found</h1></body></html>");
             }
 
-            
+            // Send response to the client
             std::string responseStr = response.toString();
             send(clientSocket, responseStr.c_str(), responseStr.length(), 0);
         }
@@ -113,16 +121,14 @@ void Server::acceptConnections() const
 }
 
 // std::cout << request.getMethod() << "\n"
-            //           << request.getPath() << "\n"
-            //           << request.getHeader("test") << "\n"
-            //           << request.getBody() << std::endl;
+//           << request.getPath() << "\n"
+//           << request.getHeader("test") << "\n"
+//           << request.getBody() << std::endl;
 
-            // response.setStatusCode(200); // Ok
-            // response.setHeader("Content-Type", "text/html");
-            // response.setHeader("Connection", "close");
-            // response.setBody("<html><body><h1>Hello from C++ Server</h1></body></html>");
-
-
+// response.setStatusCode(200); // Ok
+// response.setHeader("Content-Type", "text/html");
+// response.setHeader("Connection", "close");
+// response.setBody("<html><body><h1>Hello from C++ Server</h1></body></html>");
 
 // std::cout << "Received request:\n"
 //           << std::string(buffer, 0, bytesReceived) << std::endl;
